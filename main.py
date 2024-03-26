@@ -44,17 +44,6 @@ def get_model_mlp():
     return model_mlp.to(DEVICE)
 
 
-def get_model_cnn():
-    model_cnn = nn.Sequential(
-        nn.Conv2d(1, 12, kernel_size=5, bias=False), nn.AvgPool2d(2), 
-        nn.ReLU(), nn.Dropout(0.1), 
-        nn.Conv2d(12, 64, kernel_size=5, bias=False), nn.AvgPool2d(2), 
-        nn.ReLU(), nn.Dropout(0.1),
-        nn.Flatten(),
-        nn.Linear(1024, 10, bias=False))
-    model_cnn.apply(init_weights)
-    return model_cnn.to(DEVICE)
-
 
 def accuracy(y_hat, y): 
     if len(y_hat.shape) > 1 and y_hat.shape[1] > 1:
@@ -115,7 +104,7 @@ def get_trained_model(train_data, test_data, model_type):
     with open(f"model_{model_type}_perf.json", "w") as f:
         json.dump(perf, f, indent=2)
     return model, perf
-
+# 模型训练以及minst数据集的打开
 
 def get_snn_mlp_model(v_thr=V_THR, v_reset=V_RESET):
     model_snn = nn.Sequential(
@@ -137,7 +126,8 @@ def get_snn_cnn_model(v_thr=V_THR, v_reset=V_RESET):
         nn.Flatten(),
         nn.Linear(1024, 10, bias=False))
     return model_snn.to(DEVICE)
-
+# 此处为建立SNN模型
+# 应该调换为建立一个SNN网络，并实例一个SAC网络，将训练好的数据集加载出来
 
 def baseline_copy(layer: nn.Linear or nn.Conv2d):
     return nn.Parameter(torch.clone(layer.weight))
@@ -161,6 +151,7 @@ def data_norm(layer: nn.Linear, act: np.ndarray, previous_factor: float = 1.0):
     applied_factor = scale_factor / previous_factor 
     weight = layer.weight / applied_factor
     return nn.Parameter(torch.clone(weight)), scale_factor
+# 权重转移方式，可能需要进行简单调整
 
 
 def eval_snn(model_snn, test_data):
@@ -210,6 +201,7 @@ def get_train_act(model, train_data, layer_nos):
     all_output_1 = np.concatenate(all_output_1, axis = 0)
     all_output_2 = np.concatenate(all_output_2, axis = 0)
     return [all_output_0, all_output_1, all_output_2]
+#以上部分不知道是什么作用，需要进一步了解
 
 
 if __name__ == "__main__":
